@@ -1,10 +1,13 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
 
 export default [
   { ignores: ['dist'] },
+
+  // Configuración para JS/JSX
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
@@ -30,4 +33,27 @@ export default [
       ],
     },
   },
-]
+
+  // Configuración para TS/TSX con chequeo de tipos y entorno Node
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        project: ['./tsconfig.json'],
+        tsconfigRootDir: process.cwd(),
+        sourceType: 'module',
+      },
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+    },
+    rules: {
+      ...tseslint.configs.recommendedTypeChecked.rules,
+    },
+  },
+];
