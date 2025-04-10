@@ -1,17 +1,17 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const PaymentSummary = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const baseFee = 5.0;
   const deliveryFee = 7.0;
 
   useEffect(() => {
     if (!state || !state.form || !state.product) {
-      // Si se accede directamente sin datos
-      navigate('/');
+      navigate('/'); // redirigir si no hay datos
     }
   }, [state, navigate]);
 
@@ -20,13 +20,10 @@ const PaymentSummary = () => {
   const { form, product } = state;
   const total = Number(product.price) + baseFee + deliveryFee;
 
-  const handlePayment = () => {
-    console.log('💳 Enviar al backend:', {
-      form,
-      product,
-      total,
+  const handleGoToCheckout = () => {
+    navigate('/checkout', {
+      state: { form, product },
     });
-    // Aquí luego se enviará al backend
   };
 
   return (
@@ -39,10 +36,11 @@ const PaymentSummary = () => {
       <p className="mt-2 text-lg font-bold">Total: ${total.toFixed(2)}</p>
 
       <button
-        className="mt-4 w-full bg-green-600 text-white py-2 rounded"
-        onClick={handlePayment}
+        className="mt-4 w-full bg-green-600 text-white py-2 rounded disabled:opacity-50"
+        onClick={handleGoToCheckout}
+        disabled={loading}
       >
-        Confirmar y pagar
+        {loading ? 'Procesando...' : 'Confirmar y pagar'}
       </button>
     </div>
   );
